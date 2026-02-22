@@ -111,6 +111,18 @@
             border: 2px solid #eab308;
             border-radius: 16px;
         }
+
+        /* Image styling for gap filler */
+        .question-image {
+            width: 100%;
+            height: 100%;
+            max-height: 220px;
+            object-fit: cover;
+            border-radius: 16px;
+            border: 2px solid #3b82f6; /* Blue border */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+            opacity: 0.9;
+        }
     </style>
 </head>
 <body>
@@ -129,6 +141,7 @@
             en: [
                 {
                     question: "What is generally done in the dairy industry? (Select all that apply)",
+                    image: "https://images.unsplash.com/photo-1590005021200-a4d1f5bf9fc4?q=80&w=600&auto=format&fit=crop",
                     options: [
                         "Cows and buffaloes are forcibly artificially inseminated",
                         "Babies are separated from mothers and male calves are killed",
@@ -140,6 +153,7 @@
                 },
                 {
                     question: "What is the difference between a cow's natural lifespan and her lifespan in the dairy industry?",
+                    image: "https://images.unsplash.com/photo-1541851214828-090962323cc9?q=80&w=600&auto=format&fit=crop",
                     options: [
                         "Natural lifespan is shorter than dairy lifespan",
                         "Both are almost the same",
@@ -151,6 +165,7 @@
                 },
                 {
                     question: "What happens to the bond between a cow and her calf in a dairy farm?",
+                    image: "https://images.unsplash.com/photo-1598460592983-4a11b6d0c648?q=80&w=600&auto=format&fit=crop",
                     options: [
                         "It is deeply respected",
                         "They stay together for months",
@@ -162,6 +177,7 @@
                 },
                 {
                     question: "How is milk production continuously maintained in a dairy farm?",
+                    image: "https://images.unsplash.com/photo-1554228966-26e033320cce?q=80&w=600&auto=format&fit=crop",
                     options: [
                         "Cows automatically produce milk year-round",
                         "Cows are repeatedly artificially inseminated",
@@ -173,6 +189,7 @@
                 },
                 {
                     question: "What is done with a cow when she stops giving milk? (Select all that apply)",
+                    image: "https://images.unsplash.com/photo-1621216399434-58fffa3f3f01?q=80&w=600&auto=format&fit=crop",
                     options: [
                         "Sold to the meat industry for slaughter",
                         "Sent to a sanctuary for a peaceful retirement",
@@ -184,6 +201,7 @@
                 },
                 {
                     question: "Where does India rank in the list of top beef-exporting countries in the world?",
+                    image: "https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?q=80&w=600&auto=format&fit=crop",
                     options: [
                         "8th",
                         "2nd",
@@ -197,6 +215,7 @@
             hi: [
                 {
                     question: "डेयरी इंडस्ट्री में आम तौर पर क्या किया जाता है? (सभी सही विकल्प चुनें)",
+                    image: "https://images.unsplash.com/photo-1590005021200-a4d1f5bf9fc4?q=80&w=600&auto=format&fit=crop",
                     options: [
                         "गाय और भैंसों का जबरदस्ती कृत्रिम गर्भाधान किया जाता है",
                         "बच्चों को उनकी मां से अलग किया जाता है और नर बछड़ों को मार दिया जाता है",
@@ -208,6 +227,7 @@
                 },
                 {
                     question: "गाय की प्राकृतिक उम्र और डेयरी इंडस्ट्री में उसकी उम्र में क्या फर्क होता है?",
+                    image: "https://images.unsplash.com/photo-1541851214828-090962323cc9?q=80&w=600&auto=format&fit=crop",
                     options: [
                         "प्राकृतिक उम्र डेयरी की उम्र से कम होती है",
                         "दोनों की उम्र लगभग एक जैसी होती है",
@@ -219,6 +239,7 @@
                 },
                 {
                     question: "डेयरी फार्म में गाय और उसके बछड़े के रिश्ते के साथ क्या होता है?",
+                    image: "https://images.unsplash.com/photo-1598460592983-4a11b6d0c648?q=80&w=600&auto=format&fit=crop",
                     options: [
                         "इस रिश्ते का सम्मान किया जाता है",
                         "वे कई महीनों तक साथ रहते हैं",
@@ -230,6 +251,7 @@
                 },
                 {
                     question: "डेयरी फार्म में दूध उत्पादन कैसे बनाए रखा जाता है?",
+                    image: "https://images.unsplash.com/photo-1554228966-26e033320cce?q=80&w=600&auto=format&fit=crop",
                     options: [
                         "गायें पूरे साल अपने आप दूध देती हैं",
                         "गायों का बार-बार जबरदस्ती कृत्रिम गर्भाधान किया जाता है",
@@ -241,6 +263,7 @@
                 },
                 {
                     question: "जब गाय दूध देना बंद कर देती है तो उसके साथ क्या किया जाता है? (सभी सही विकल्प चुनें)",
+                    image: "https://images.unsplash.com/photo-1621216399434-58fffa3f3f01?q=80&w=600&auto=format&fit=crop",
                     options: [
                         "उसे काटने के लिए मांस उद्योग को बेच दिया जाता है",
                         "उसे गौशाला/सैंक्चुअरी में आराम से जिंदगी बिताने भेज दिया जाता है",
@@ -252,6 +275,7 @@
                 },
                 {
                     question: "सबसे ज्यादा बीफ (गोमांस) एक्सपोर्ट करने वाले देशों की सूची में भारत किस स्थान पर है?",
+                    image: "https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?q=80&w=600&auto=format&fit=crop",
                     options: [
                         "आठवें (8th)",
                         "दूसरे (2nd)",
@@ -265,6 +289,7 @@
             mr: [
                 {
                     question: "डेअरी उद्योगात साधारणपणे काय केले जाते? (सर्व योग्य पर्याय निवडा)",
+                    image: "https://images.unsplash.com/photo-1590005021200-a4d1f5bf9fc4?q=80&w=600&auto=format&fit=crop",
                     options: [
                         "गाय आणि म्हशींवर जबरदस्तीने कृत्रिम गर्भधारणा केली जाते",
                         "वासरांना त्यांच्या आईपासून वेगळे केले जाते आणि नर वासरांना मारले जाते",
@@ -276,6 +301,7 @@
                 },
                 {
                     question: "गाईचे नैसर्गिक आयुष्य आणि डेअरी उद्योगातील तिचे आयुष्य यात काय फरक आहे?",
+                    image: "https://images.unsplash.com/photo-1541851214828-090962323cc9?q=80&w=600&auto=format&fit=crop",
                     options: [
                         "नैसर्गिक आयुष्य डेअरीतील आयुष्यापेक्षा कमी असते",
                         "दोन्हीचे आयुष्य साधारणपणे सारखेच असते",
@@ -287,6 +313,7 @@
                 },
                 {
                     question: "डेअरी फार्ममध्ये गाय आणि तिच्या वासराच्या नात्याचे काय होते?",
+                    image: "https://images.unsplash.com/photo-1598460592983-4a11b6d0c648?q=80&w=600&auto=format&fit=crop",
                     options: [
                         "या नात्याचा आदर केला जातो",
                         "ते अनेक महिने एकत्र राहतात",
@@ -298,6 +325,7 @@
                 },
                 {
                     question: "डेअरी फार्ममध्ये दूध उत्पादन कसे टिकवून ठेवले जाते?",
+                    image: "https://images.unsplash.com/photo-1554228966-26e033320cce?q=80&w=600&auto=format&fit=crop",
                     options: [
                         "गाई वर्षभर आपोआप भरपूर दूध देतात",
                         "गाईंवर वारंवार जबरदस्तीने कृत्रिम गर्भधारणा केली जाते",
@@ -309,6 +337,7 @@
                 },
                 {
                     question: "जेव्हा गाय दूध देणे बंद करते तेव्हा तिचे काय केले जाते? (सर्व योग्य पर्याय निवडा)",
+                    image: "https://images.unsplash.com/photo-1621216399434-58fffa3f3f01?q=80&w=600&auto=format&fit=crop",
                     options: [
                         "तिला कत्तलीसाठी मांस उद्योगाला विकले जाते",
                         "तिला गोशाळेत किंवा अभयारण्यात शांततेत जीवन जगण्यासाठी पाठवले जाते",
@@ -320,6 +349,7 @@
                 },
                 {
                     question: "सर्वाधिक बीफ निर्यात करणाऱ्या देशांच्या यादीत भारत कितव्या स्थानावर आहे?",
+                    image: "https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?q=80&w=600&auto=format&fit=crop",
                     options: [
                         "आठव्या (8th)",
                         "दुसऱ्या (2nd)",
@@ -530,19 +560,28 @@
                     </div>
 
                     {/* Question Area */}
-                    <div className="w-full max-w-md mt-6 mb-4">
-                        <div className="kbc-question-box px-6 py-8 text-center z-10 text-lg md:text-xl font-semibold shadow-lg">
+                    <div className="w-full max-w-md mt-6 mb-2">
+                        <div className="kbc-question-box px-6 py-6 text-center z-10 text-lg md:text-xl font-semibold shadow-lg">
                             {q.question}
                         </div>
                         {isMultiChoice && !isLocked && (
-                            <p className="text-center text-sm text-yellow-400 mt-3 animate-pulse">
+                            <p className="text-center text-sm text-yellow-400 mt-2 animate-pulse">
                                 {text.multiTip}
                             </p>
                         )}
                     </div>
 
+                    {/* Context Image (Fills the Gap) */}
+                    <div className="flex-1 flex flex-col items-center justify-center w-full max-w-md p-2 min-h-0">
+                        <img 
+                            src={q.image} 
+                            alt="Question Context" 
+                            className="question-image"
+                        />
+                    </div>
+
                     {/* Options Area */}
-                    <div className="w-full max-w-md flex flex-col gap-3 mb-6 mt-auto">
+                    <div className="w-full max-w-md flex flex-col gap-3 mb-2 mt-2">
                         {q.options.map((opt, idx) => {
                             let itemClass = "kbc-option";
                             let icon = <span className="text-yellow-500 mr-3 font-bold text-lg">{prefixes[idx]}:</span>;
@@ -566,7 +605,7 @@
 
                             return (
                                 <div key={idx} 
-                                     className={`relative w-full px-5 py-4 ${itemClass} flex items-center shadow-md`}
+                                     className={`relative w-full px-5 py-3 md:py-4 ${itemClass} flex items-center shadow-md`}
                                      onClick={() => handleOptClick(idx)}>
                                      {icon}
                                      <span className="flex-1 text-sm md:text-base text-left leading-tight">{opt}</span>
