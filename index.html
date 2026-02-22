@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dairy Truths Quiz</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Mukta:wght@400;600;800&family=Poppins:wght@400;600;800&display=swap');
+
+        body {
+            background-color: #050a1f; /* Darker, more serious background */
+            font-family: 'Poppins', 'Mukta', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .kbc-bg {
+            background: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
+        }
+
+        .kbc-question-box {
+            background: linear-gradient(180deg, #1e3a8a 0%, #172554 100%);
+            border: 2px solid #eab308;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .kbc-option {
+            background: linear-gradient(180deg, #1e3a8a 0%, #172554 100%);
+            border: 2px solid #eab308;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .kbc-option:active {
+            transform: scale(0.98);
+        }
+
+        /* Selected state for multiple choice */
+        .kbc-option-selected {
+            background: linear-gradient(180deg, #ca8a04 0%, #854d0e 100%);
+            border-color: #fef08a;
+            color: #fff;
+        }
+
+        .kbc-option-locked {
+            background: linear-gradient(180deg, #ca8a04 0%, #854d0e 100%);
+            border-color: #fef08a;
+            color: #fff;
+            box-shadow: 0 0 15px rgba(250, 204, 21, 0.6);
+        }
+
+        .kbc-option-correct {
+            background: linear-gradient(180deg, #16a34a 0%, #14532d 100%);
+            border-color: #86efac;
+            color: white;
+            animation: pulse-green 1s infinite;
+        }
+
+        .kbc-option-wrong {
+            background: linear-gradient(180deg, #dc2626 0%, #7f1d1d 100%);
+            border-color: #fca5a5;
+            color: white;
+        }
+
+        @keyframes pulse-green {
+            0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.5); }
+            70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        }
+
+        .fact-modal {
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(5px);
+        }
+        
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 */
+            height: 0;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid #eab308;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .score-box {
+            background: #1e3a8a; /* Solid dark blue for score */
+            border: 2px solid #eab308;
+            border-radius: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const videoLinks = {
+            en: "https://www.youtube.com/embed/XhTOLeevtQw",
+            hi: "https://www.youtube.com/embed/XhTOLeevtQw",
+            mr: "https://www.youtube.com/embed/Pxs4v8cwayQ"
+        };
+
+        const quizData = {
+            en: [
+                {
+                    question: "What is generally done in the dairy industry? (Select all that apply)",
+                    options: [
+                        "Cows and buffaloes are forcibly artificially inseminated",
+                        "Babies are separated from mothers and male calves are killed",
+                        "Cows that stop giving milk are sold for slaughter",
+                        "Cows and buffaloes are cared for until their natural death"
+                    ],
+                    correctIndices: [0, 1, 2],
+                    fact: "The dairy industry thrives on artificial insemination, separation of families, and slaughtering animals when their milk production declines. They are not kept alive until natural death."
+                },
+                {
+                    question: "What is the difference between a cow's natural lifespan and her lifespan in the dairy industry?",
+                    options: [
+                        "Natural lifespan is shorter than dairy lifespan",
+                        "Both are almost the same",
+                        "Natural is 15-20 years; Dairy is usually 4-6 years",
+                        "Dairy cows live long, peaceful natural lives"
+                    ],
+                    correctIndices: [2],
+                    fact: "Cows can naturally live up to 20 years. However, in the dairy industry, their bodies are exhausted from continuous pregnancies and milking, so they are considered 'spent' and sent to slaughter at just 4-6 years of age."
+                },
+                {
+                    question: "What happens to the bond between a cow and her calf in a dairy farm?",
+                    options: [
+                        "It is deeply respected",
+                        "They stay together for months",
+                        "They are forcibly separated shortly after birth",
+                        "Kept together until weaning"
+                    ],
+                    correctIndices: [2],
+                    fact: "Calves are snatched away within 24 hours of birth so that the milk meant for them can be sold to humans. Mother cows often cry for days looking for their stolen babies."
+                },
+                {
+                    question: "How is milk production continuously maintained in a dairy farm?",
+                    options: [
+                        "Cows automatically produce milk year-round",
+                        "Cows are repeatedly artificially inseminated",
+                        "Cows voluntarily offer milk daily",
+                        "Cows produce milk without getting pregnant"
+                    ],
+                    correctIndices: [1],
+                    fact: "Like human mothers, a cow only produces milk when she has a baby. To keep milk flowing, she is forcefully artificially inseminated year after year on what the industry calls 'rape racks'."
+                },
+                {
+                    question: "What is done with a cow when she stops giving milk? (Select all that apply)",
+                    options: [
+                        "Sold to the meat industry for slaughter",
+                        "Sent to a sanctuary for a peaceful retirement",
+                        "Slaughtered and used in pet food, gelatin, and glue",
+                        "Used for leather and other animal by-products"
+                    ],
+                    correctIndices: [0, 2, 3],
+                    fact: "Once cows are 'spent' and no longer profitable for milk, they are sold for slaughter. Their bodies are turned into beef, leather, gelatin, and other by-products."
+                },
+                {
+                    question: "Where does India rank in the list of top beef-exporting countries in the world?",
+                    options: [
+                        "8th",
+                        "2nd",
+                        "12th",
+                        "20th"
+                    ],
+                    correctIndices: [1],
+                    fact: "India is the 2nd largest exporter of beef in the world. The Indian meat and leather industry is directly supplied by the spent cows and unwanted male calves discarded by the dairy industry."
+                }
+            ],
+            hi: [
+                {
+                    question: "डेयरी इंडस्ट्री में आम तौर पर क्या किया जाता है? (सभी सही विकल्प चुनें)",
+                    options: [
+                        "गाय और भैंसों का जबरदस्ती कृत्रिम गर्भाधान किया जाता है",
+                        "बच्चों को उनकी मां से अलग किया जाता है और नर बछड़ों को मार दिया जाता है",
+                        "जो गाय-भैंस दूध देना बंद कर दें, उन्हें काटने के लिए बेच दिया जाता है",
+                        "गाय-भैंसों की तब तक देखभाल की जाती है जब तक वे प्राकृतिक मौत न मरें"
+                    ],
+                    correctIndices: [0, 1, 2],
+                    fact: "डेयरी उद्योग पूरी तरह से गायों के कृत्रिम गर्भाधान, बछड़ों को अलग करने और दूध देना बंद करने पर गायों को कत्लखाने भेजने पर निर्भर है। उन्हें प्राकृतिक मौत मरने के लिए नहीं रखा जाता।"
+                },
+                {
+                    question: "गाय की प्राकृतिक उम्र और डेयरी इंडस्ट्री में उसकी उम्र में क्या फर्क होता है?",
+                    options: [
+                        "प्राकृतिक उम्र डेयरी की उम्र से कम होती है",
+                        "दोनों की उम्र लगभग एक जैसी होती है",
+                        "प्राकृतिक उम्र 15-20 साल होती है; डेयरी में 4-6 साल",
+                        "डेयरी की गायें लंबी और शांति से प्राकृतिक जिंदगी जीती हैं"
+                    ],
+                    correctIndices: [2],
+                    fact: "गायों की प्राकृतिक उम्र 15-20 साल तक होती है, लेकिन लगातार गर्भधारण और दूध दुहने से उनका शरीर 4-6 साल में ही टूट जाता है, जिसके बाद उन्हें कत्लखाने भेज दिया जाता है।"
+                },
+                {
+                    question: "डेयरी फार्म में गाय और उसके बछड़े के रिश्ते के साथ क्या होता है?",
+                    options: [
+                        "इस रिश्ते का सम्मान किया जाता है",
+                        "वे कई महीनों तक साथ रहते हैं",
+                        "जन्म के थोड़े समय बाद ही जबरदस्ती अलग कर दिया जाता है",
+                        "दूध छुड़ाने तक उन्हें साथ रखा जाता है"
+                    ],
+                    correctIndices: [2],
+                    fact: "जन्म के 24 घंटे के भीतर ही बछड़ों को मां से छीन लिया जाता है ताकि उनका दूध इंसानों को बेचा जा सके। मां गायें अक्सर कई दिनों तक अपने बच्चों के लिए रोती और तड़पती रहती हैं।"
+                },
+                {
+                    question: "डेयरी फार्म में दूध उत्पादन कैसे बनाए रखा जाता है?",
+                    options: [
+                        "गायें पूरे साल अपने आप दूध देती हैं",
+                        "गायों का बार-बार जबरदस्ती कृत्रिम गर्भाधान किया जाता है",
+                        "गायें खुद दिन में कई बार दूध देने के लिए तैयार होती हैं",
+                        "बिना गर्भ के भी गायें ज्यादा दूध देती हैं"
+                    ],
+                    correctIndices: [1],
+                    fact: "इंसानी माताओं की तरह, गाय भी तभी दूध देती है जब वह एक बच्चे को जन्म देती है। दूध का उत्पादन बनाए रखने के लिए, हर साल उनका जबरदस्ती कृत्रिम गर्भाधान किया जाता है।"
+                },
+                {
+                    question: "जब गाय दूध देना बंद कर देती है तो उसके साथ क्या किया जाता है? (सभी सही विकल्प चुनें)",
+                    options: [
+                        "उसे काटने के लिए मांस उद्योग को बेच दिया जाता है",
+                        "उसे गौशाला/सैंक्चुअरी में आराम से जिंदगी बिताने भेज दिया जाता है",
+                        "उसे काटकर पालतू जानवरों के खाने, जिलेटिन, गोंद में इस्तेमाल किया जाता है",
+                        "उन्हें चमड़ा और दूसरे उत्पादों के लिए इस्तेमाल किया जाता है"
+                    ],
+                    correctIndices: [0, 2, 3],
+                    fact: "जब गाय दूध देने लायक नहीं रहती, तो उसे कत्लखाने (Slaughterhouse) भेज दिया जाता है। उसके शरीर का इस्तेमाल बीफ, चमड़ा, जिलेटिन आदि बनाने में किया जाता है।"
+                },
+                {
+                    question: "सबसे ज्यादा बीफ (गोमांस) एक्सपोर्ट करने वाले देशों की सूची में भारत किस स्थान पर है?",
+                    options: [
+                        "आठवें (8th)",
+                        "दूसरे (2nd)",
+                        "बारहवें (12th)",
+                        "बीसवें (20th)"
+                    ],
+                    correctIndices: [1],
+                    fact: "भारत दुनिया में बीफ का दूसरा सबसे बड़ा निर्यातक (exporter) है। डेयरी उद्योग की अनुपयोगी गायें और नर बछड़े ही भारत के इस विशाल मांस और चमड़ा उद्योग का मुख्य स्रोत हैं।"
+                }
+            ],
+            mr: [
+                {
+                    question: "डेअरी उद्योगात साधारणपणे काय केले जाते? (सर्व योग्य पर्याय निवडा)",
+                    options: [
+                        "गाय आणि म्हशींवर जबरदस्तीने कृत्रिम गर्भधारणा केली जाते",
+                        "वासरांना त्यांच्या आईपासून वेगळे केले जाते आणि नर वासरांना मारले जाते",
+                        "ज्या गायी-म्हशी दूध देणे बंद करतात, त्यांना कत्तलीसाठी विकले जाते",
+                        "गायी-म्हशी नैसर्गिक मृत्यूपर्यंत सांभाळल्या जातात"
+                    ],
+                    correctIndices: [0, 1, 2],
+                    fact: "डेअरी उद्योग हा कृत्रिम गर्भधारणा, वासरांना वेगळे करणे आणि दूध देण्याची क्षमता संपल्यावर जनावरांना कत्तलखान्यात पाठवणे यावरच चालतो."
+                },
+                {
+                    question: "गाईचे नैसर्गिक आयुष्य आणि डेअरी उद्योगातील तिचे आयुष्य यात काय फरक आहे?",
+                    options: [
+                        "नैसर्गिक आयुष्य डेअरीतील आयुष्यापेक्षा कमी असते",
+                        "दोन्हीचे आयुष्य साधारणपणे सारखेच असते",
+                        "नैसर्गिक आयुष्य १५-२० वर्षे असते; डेअरीमध्ये ४-६ वर्षे",
+                        "डेअरीतील गाई लांब आणि शांतपणे नैसर्गिक जीवन जगतात"
+                    ],
+                    correctIndices: [2],
+                    fact: "गाई नैसर्गिकरित्या १५-२० वर्षे जगू शकतात. परंतु डेअरी उद्योगात सततच्या गर्भधारणेमुळे त्यांचे शरीर ४-६ वर्षांतच थकून जाते आणि त्यानंतर त्यांना कत्तलखान्यात पाठवले जाते."
+                },
+                {
+                    question: "डेअरी फार्ममध्ये गाय आणि तिच्या वासराच्या नात्याचे काय होते?",
+                    options: [
+                        "या नात्याचा आदर केला जातो",
+                        "ते अनेक महिने एकत्र राहतात",
+                        "जन्मानंतर थोड्याच वेळात त्यांना जबरदस्तीने वेगळे केले जाते",
+                        "दूध सोडेपर्यंत त्यांना एकत्र ठेवले जाते"
+                    ],
+                    correctIndices: [2],
+                    fact: "जन्मानंतर २४ तासांच्या आत वासरांना आईपासून हिरावून घेतले जाते जेणेकरून त्यांच्या वाट्याचे दूध मानवांना विकता येईल."
+                },
+                {
+                    question: "डेअरी फार्ममध्ये दूध उत्पादन कसे टिकवून ठेवले जाते?",
+                    options: [
+                        "गाई वर्षभर आपोआप भरपूर दूध देतात",
+                        "गाईंवर वारंवार जबरदस्तीने कृत्रिम गर्भधारणा केली जाते",
+                        "गाई स्वतःहून दिवसातून अनेक वेळा दूध देण्यासाठी तयार असतात",
+                        "गर्भधारणेविनाही गाई जास्त दूध देतात"
+                    ],
+                    correctIndices: [1],
+                    fact: "मानवी मातांप्रमाणेच, गायीला बाळ झाल्यावरच ती दूध देते. दुधाचे उत्पादन चालू ठेवण्यासाठी, दरवर्षी तिच्यावर जबरदस्तीने कृत्रिम गर्भधारणा केली जाते."
+                },
+                {
+                    question: "जेव्हा गाय दूध देणे बंद करते तेव्हा तिचे काय केले जाते? (सर्व योग्य पर्याय निवडा)",
+                    options: [
+                        "तिला कत्तलीसाठी मांस उद्योगाला विकले जाते",
+                        "तिला गोशाळेत किंवा अभयारण्यात शांततेत जीवन जगण्यासाठी पाठवले जाते",
+                        "तिला कापून पाळीव प्राण्यांचे अन्न, जिलेटिन, डिंक यासाठी वापरले जाते",
+                        "तिचा चामड्यासाठी आणि इतर उत्पादनांसाठी वापर केला जातो"
+                    ],
+                    correctIndices: [0, 2, 3],
+                    fact: "दूध देण्याची क्षमता संपल्यावर गायीला कत्तलखान्यात पाठवले जाते. तिच्या शरीराचा वापर बीफ, चामडे आणि जिलेटिन बनवण्यासाठी होतो."
+                },
+                {
+                    question: "सर्वाधिक बीफ निर्यात करणाऱ्या देशांच्या यादीत भारत कितव्या स्थानावर आहे?",
+                    options: [
+                        "आठव्या (8th)",
+                        "दुसऱ्या (2nd)",
+                        "बाराव्या (12th)",
+                        "विसाव्या (20th)"
+                    ],
+                    correctIndices: [1],
+                    fact: "भारत हा जगातील दुसरा सर्वात मोठा बीफ निर्यातदार देश आहे. डेअरी उद्योगातील निरुपयोगी ठरलेल्या गाई आणि नर वासरे हाच भारताच्या मांस आणि चामड्याच्या उद्योगाचा मुख्य स्रोत आहे."
+                }
+            ]
+        };
+
+        const labels = {
+            en: { title: "Dairy Truths", play: "Start Quiz", next: "Next Question", scoreTitle: "Your Score", restart: "Retake Quiz", fact: "THE TRUTH", submit: "Submit Answer", thanks: "Thank you for taking the quiz. Awareness is the first step towards compassion.", multiTip: "Select all correct options and submit" },
+            hi: { title: "डेयरी का सच", play: "क्विज़ शुरू करें", next: "अगला सवाल", scoreTitle: "आपका स्कोर", restart: "फिर से क्विज़ लें", fact: "कड़वा सच", submit: "जवाब सबमिट करें", thanks: "क्विज़ लेने के लिए धन्यवाद। जागरूकता ही करुणा की ओर पहला कदम है।", multiTip: "सभी सही विकल्प चुनें और सबमिट करें" },
+            mr: { title: "डेअरीचे सत्य", play: "क्विझ सुरू करा", next: "पुढचा प्रश्न", scoreTitle: "तुमचा स्कोर", restart: "पुन्हा क्विझ घ्या", fact: "कटू सत्य", submit: "उत्तर सबमिट करा", thanks: "क्विझ घेतल्याबद्दल धन्यवाद. जागरूकता हेच करुणेच्या दिशेने पहिले पाऊल आहे.", multiTip: "सर्व योग्य पर्याय निवडा आणि सबमिट करा" }
+        };
+
+        const prefixes = ['A', 'B', 'C', 'D'];
+
+        function App() {
+            const [lang, setLang] = useState(null);
+            const [gameState, setGameState] = useState('lang'); // lang, intro, play, fact, end
+            const [currentQ, setCurrentQ] = useState(0);
+            
+            // Multiple selection state
+            const [selectedOpts, setSelectedOpts] = useState([]);
+            const [isLocked, setIsLocked] = useState(false);
+            const [isAnswered, setIsAnswered] = useState(false);
+            const [score, setScore] = useState(0);
+
+            const questions = lang ? quizData[lang] : [];
+            const text = lang ? labels[lang] : {};
+
+            const handleOptClick = (index) => {
+                if (isLocked) return;
+                
+                const q = questions[currentQ];
+                const isMultiChoice = q.correctIndices.length > 1;
+
+                if (isMultiChoice) {
+                    // Toggle selection for multiple choice
+                    if (selectedOpts.includes(index)) {
+                        setSelectedOpts(selectedOpts.filter(i => i !== index));
+                    } else {
+                        setSelectedOpts([...selectedOpts, index]);
+                    }
+                } else {
+                    // Single choice behaviour
+                    setSelectedOpts([index]);
+                    submitAnswer([index]);
+                }
+            };
+
+            const submitAnswer = (selectedArray) => {
+                if (selectedArray.length === 0) return;
+                setIsLocked(true);
+
+                // Suspense before showing answer
+                setTimeout(() => {
+                    setIsAnswered(true);
+                    
+                    const q = questions[currentQ];
+                    // Check if selected matches correct indices exactly
+                    const isCorrect = q.correctIndices.length === selectedArray.length && 
+                                      q.correctIndices.every(val => selectedArray.includes(val));
+                    
+                    if (isCorrect) {
+                        setScore(s => s + 1);
+                    }
+
+                    // Show fact modal
+                    setTimeout(() => {
+                        setGameState('fact');
+                    }, 2000);
+                    
+                }, 1500);
+            };
+
+            const handleMultiSubmit = () => {
+                submitAnswer(selectedOpts);
+            };
+
+            const nextQuestion = () => {
+                if (currentQ + 1 < questions.length) {
+                    setCurrentQ(c => c + 1);
+                    setSelectedOpts([]);
+                    setIsLocked(false);
+                    setIsAnswered(false);
+                    setGameState('play');
+                } else {
+                    setGameState('end');
+                }
+            };
+
+            const restartGame = () => {
+                setGameState('lang');
+                setCurrentQ(0);
+                setScore(0);
+                setSelectedOpts([]);
+                setIsLocked(false);
+                setIsAnswered(false);
+                setLang(null);
+            };
+
+            // 1. Language Selection Screen
+            if (gameState === 'lang') {
+                return (
+                    <div className="kbc-bg min-h-screen flex flex-col items-center justify-center p-4 text-white">
+                        <div className="w-24 h-24 rounded-full border-4 border-yellow-500 flex items-center justify-center mb-6 bg-blue-900 shadow-[0_0_20px_rgba(234,179,8,0.5)]">
+                            <span className="text-3xl">🐄</span>
+                        </div>
+                        <h1 className="text-3xl font-bold mb-8 text-yellow-500 text-center leading-relaxed">
+                            Dairy Truths<br/>
+                            <span className="text-2xl text-white">भाषा चुनें / भाषा निवडा</span>
+                        </h1>
+                        
+                        <div className="w-full max-w-xs space-y-4">
+                            <button onClick={() => {setLang('mr'); setGameState('intro');}} className="w-full py-4 rounded-full border-2 border-yellow-500 bg-blue-900 text-xl font-bold hover:bg-yellow-600 transition shadow-lg">मराठी</button>
+                            <button onClick={() => {setLang('hi'); setGameState('intro');}} className="w-full py-4 rounded-full border-2 border-yellow-500 bg-blue-900 text-xl font-bold hover:bg-yellow-600 transition shadow-lg">हिंदी</button>
+                            <button onClick={() => {setLang('en'); setGameState('intro');}} className="w-full py-4 rounded-full border-2 border-yellow-500 bg-blue-900 text-xl font-bold hover:bg-yellow-600 transition shadow-lg">English</button>
+                        </div>
+                    </div>
+                );
+            }
+
+            // 2. Intro Screen (Shows Documentary)
+            if (gameState === 'intro') {
+                return (
+                    <div className="kbc-bg min-h-screen flex flex-col items-center p-6 text-white text-center">
+                        <h1 className="text-3xl font-bold text-yellow-500 mb-6 mt-4">{text.title}</h1>
+                        
+                        <div className="w-full max-w-md mb-8">
+                            <h2 className="text-lg mb-4 text-gray-300">
+                                {lang === 'en' ? "Watch Maa Ka Doodh Documentary" : lang === 'hi' ? "मां का दूध डॉक्यूमेंट्री देखें" : "मां का दूध डॉक्युमेंट्री पहा"}
+                            </h2>
+                            <div className="video-container">
+                                <iframe 
+                                    src={videoLinks[lang]} 
+                                    title="Maa Ka Doodh Documentary" 
+                                    frameBorder="0" 
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                    allowFullScreen>
+                                </iframe>
+                            </div>
+                        </div>
+
+                        <button onClick={() => setGameState('play')} className="mt-auto mb-8 w-full max-w-xs py-4 rounded-full border-2 border-yellow-500 bg-blue-900 text-xl font-bold hover:bg-yellow-600 transition shadow-lg">
+                            {text.play}
+                        </button>
+                    </div>
+                );
+            }
+
+            // 3. End Screen
+            if (gameState === 'end') {
+                return (
+                    <div className="kbc-bg min-h-screen flex flex-col items-center p-6 text-white text-center pb-10">
+                        <h1 className="text-4xl font-bold text-yellow-500 mb-8 mt-4">{text.title}</h1>
+                        
+                        <div className="score-box p-8 mb-6 w-full max-w-sm shadow-[0_0_20px_rgba(0,0,0,0.5)]">
+                            <h2 className="text-2xl font-semibold mb-2 text-white">{text.scoreTitle}</h2>
+                            <p className="text-6xl font-bold text-yellow-400 drop-shadow-md">{score} / {questions.length}</p>
+                        </div>
+                        
+                        <p className="mb-8 text-lg text-gray-200 max-w-md px-4 leading-relaxed">
+                            {text.thanks}
+                        </p>
+
+                        <button onClick={restartGame} className="px-8 py-3 mb-10 rounded-full border-2 border-yellow-500 bg-blue-900 text-lg font-bold hover:bg-yellow-600 transition">
+                            {text.restart}
+                        </button>
+
+                        <div className="w-full max-w-md">
+                            <hr className="border-gray-700 mb-6"/>
+                            <h3 className="text-lg mb-4 text-gray-300">
+                                {lang === 'en' ? "Uncover the full truth:" : lang === 'hi' ? "पूरा सच जानने के लिए देखें:" : "संपूर्ण सत्य जाणून घेण्यासाठी पहा:"}
+                            </h3>
+                            <div className="video-container">
+                                <iframe 
+                                    src={videoLinks[lang]} 
+                                    title="Maa Ka Doodh Documentary" 
+                                    frameBorder="0" 
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                    allowFullScreen>
+                                </iframe>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            const q = questions[currentQ];
+            const isMultiChoice = q.correctIndices.length > 1;
+
+            // 4. Play Screen
+            return (
+                <div className="kbc-bg min-h-screen flex flex-col items-center justify-between py-6 px-4 text-white relative">
+                    
+                    {/* Header */}
+                    <div className="w-full flex justify-between items-center max-w-md px-2 mt-2">
+                        <div className="text-yellow-500 font-bold border border-yellow-500 px-3 py-1 rounded-full text-sm">
+                            Q: {currentQ + 1}/{questions.length}
+                        </div>
+                        <div className="w-10 h-10 rounded-full border-2 border-yellow-500 flex items-center justify-center bg-blue-900 text-lg shadow-lg">
+                            🐄
+                        </div>
+                    </div>
+
+                    {/* Question Area */}
+                    <div className="w-full max-w-md mt-6 mb-4">
+                        <div className="kbc-question-box px-6 py-8 text-center z-10 text-lg md:text-xl font-semibold shadow-lg">
+                            {q.question}
+                        </div>
+                        {isMultiChoice && !isLocked && (
+                            <p className="text-center text-sm text-yellow-400 mt-3 animate-pulse">
+                                {text.multiTip}
+                            </p>
+                        )}
+                    </div>
+
+                    {/* Options Area */}
+                    <div className="w-full max-w-md flex flex-col gap-3 mb-6 mt-auto">
+                        {q.options.map((opt, idx) => {
+                            let itemClass = "kbc-option";
+                            let icon = <span className="text-yellow-500 mr-3 font-bold text-lg">{prefixes[idx]}:</span>;
+
+                            if (isAnswered) {
+                                if (q.correctIndices.includes(idx)) {
+                                    itemClass = "kbc-option-correct";
+                                    icon = <span className="text-white mr-3 font-bold text-lg">✓</span>;
+                                } else if (selectedOpts.includes(idx)) {
+                                    itemClass = "kbc-option-wrong";
+                                    icon = <span className="text-white mr-3 font-bold text-lg">✗</span>;
+                                }
+                            } else if (isLocked) {
+                                if (selectedOpts.includes(idx)) {
+                                    itemClass = "kbc-option-locked";
+                                }
+                            } else if (selectedOpts.includes(idx)) {
+                                itemClass = "kbc-option-selected";
+                                icon = <span className="text-white mr-3 font-bold text-lg">✓</span>;
+                            }
+
+                            return (
+                                <div key={idx} 
+                                     className={`relative w-full px-5 py-4 ${itemClass} flex items-center shadow-md`}
+                                     onClick={() => handleOptClick(idx)}>
+                                     {icon}
+                                     <span className="flex-1 text-sm md:text-base text-left leading-tight">{opt}</span>
+                                </div>
+                            );
+                        })}
+                        
+                        {/* Submit button for Multi-Choice questions */}
+                        {isMultiChoice && !isLocked && selectedOpts.length > 0 && (
+                            <button 
+                                onClick={handleMultiSubmit}
+                                className="mt-2 py-3 rounded-full border-2 border-green-500 bg-green-700 text-white font-bold hover:bg-green-600 transition shadow-[0_0_15px_rgba(34,197,94,0.4)] animate-fade-in">
+                                {text.submit}
+                            </button>
+                        )}
+                    </div>
+
+                    {/* Fact Modal Overlay */}
+                    {gameState === 'fact' && (
+                        <div className="fixed inset-0 fact-modal flex items-center justify-center p-4 z-50">
+                            <div className="bg-[#0f172a] border border-gray-600 rounded-2xl w-full max-w-md p-6 text-center shadow-2xl animate-fade-in">
+                                <div className="text-yellow-500 text-4xl mb-3">💡</div>
+                                <h2 className="text-2xl font-bold text-yellow-500 mb-2">{text.fact}</h2>
+                                <hr className="border-gray-700 mb-4"/>
+                                <p className="text-base md:text-lg leading-relaxed mb-8 text-gray-200 text-left">
+                                    {q.fact}
+                                </p>
+                                <button 
+                                    onClick={nextQuestion}
+                                    className="w-full py-3 rounded-full border-2 border-yellow-500 bg-blue-900 text-lg font-bold hover:bg-yellow-600 transition shadow-lg">
+                                    {text.next}
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
